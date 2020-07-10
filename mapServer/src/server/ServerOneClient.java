@@ -68,7 +68,14 @@ public class ServerOneClient extends Thread {
 					break;
 
 				case "3": // INTERACTIVE PHASE
-					tree.predictClass(in, out);
+					int error = tree.predictClass(in, out);
+					if (error < 0) {
+						System.out.println(socket + " connection dropped!");
+						out.close();
+						in.close();
+						socket.close();
+						check = false;
+					}
 					break;
 
 				}
@@ -93,7 +100,7 @@ public class ServerOneClient extends Thread {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-			}	catch (IOException ioex) {
+			} catch (IOException ioex) {
 				ioex.printStackTrace();
 				try {
 					out.writeObject("I/O Exception\n");

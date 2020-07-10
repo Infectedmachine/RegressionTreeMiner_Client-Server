@@ -147,28 +147,48 @@ public class RegressionTree implements Serializable {
 		}
 	}
 
-	public void predictClass(ObjectInputStream in, ObjectOutputStream out) {
+	public int predictClass(ObjectInputStream in, ObjectOutputStream out) {
 		try {
 			if (root instanceof LeafNode) {
-				out.writeObject("OK");
-				out.writeObject(((LeafNode) root).getPredictedClassValue());
-			}
-			else {
-				int choice;
-				out.writeObject("QUERY");
-				out.writeObject(((SplitNode) root).formulateQuery());
+				try {
+					out.writeObject("OK");
+					out.writeObject(((LeafNode) root).getPredictedClassValue());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return -1;
+				}
+				return 0;
 
-				choice = (Integer) in.readObject();
-				if (choice == -1 || choice >= root.getNumberOfChildren())
-					out.writeObject(
-							"The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!");
-				else {
-					childTree[choice].predictClass(in, out);
+			} else {
+				int choice;
+				try {
+					out.writeObject("QUERY");
+					out.writeObject(((SplitNode) root).formulateQuery());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return -1;
+				}
+
+				try {
+					choice = (Integer) in.readObject();
+
+					if (choice == -1 || choice >= root.getNumberOfChildren()) {
+						out.writeObject("The answer should be an integer between 0 and "
+								+ (root.getNumberOfChildren() - 1) + "!");
+						return 1;
+					} else {
+						childTree[choice].predictClass(in, out);
+						return 0;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					return -1;
 				}
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return -1;
 		}
 	}
 

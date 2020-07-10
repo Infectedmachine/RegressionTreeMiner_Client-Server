@@ -31,7 +31,7 @@ public class ClientGUI extends JFrame {
 	public void ClientGUIRun() {
 		JFrame connect = new JFrame("Server Connection");
 		connect.setLayout(new GridLayout(3, 1));
-		connect.setSize(500, 200);
+		connect.setSize(250, 150);
 		connect.setLocationRelativeTo(null);
 		connect.add(new JLabel("Server IP Address: "));
 		JTextField text = new JTextField();
@@ -95,6 +95,8 @@ public class ClientGUI extends JFrame {
 		setSize(600, 400);
 		setLocationRelativeTo(null);
 		setVisible(true);
+		if (!connected)
+			setVisible(false);
 		return connected;
 	}
 
@@ -160,7 +162,6 @@ public class ClientGUI extends JFrame {
 			}, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					try {
-						panelDB.output.setText("");
 						predictClass(panelDB);
 					} catch (ClassNotFoundException | IOException e) {
 						JOptionPane.showMessageDialog(panelDB, "Operation failed");
@@ -185,7 +186,6 @@ public class ClientGUI extends JFrame {
 			}, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					try {
-						panelFile.output.setText("");
 						predictClass(panelFile);
 					} catch (ClassNotFoundException | IOException e) {
 						JOptionPane.showMessageDialog(panelDB, "Operation failed");
@@ -199,13 +199,14 @@ public class ClientGUI extends JFrame {
 			this.add(panelDB);
 		}
 
-		private void predictClass(JPanelCluster panel) throws SocketException, IOException, ClassNotFoundException, ServerException {
+		private void predictClass(JPanelCluster panel)
+				throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String choice;
 			String results;
 			choice = panel.choiceText.getText().trim();
 			results = client.predictClass(choice);
-				
-			panel.output.append("\n" + results);
+
+			panel.output.append(results);
 		}
 
 		private void learningFromDB() throws SocketException, IOException, ClassNotFoundException, ServerException {
