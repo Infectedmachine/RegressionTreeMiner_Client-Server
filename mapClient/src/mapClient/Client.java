@@ -8,8 +8,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import utility.Keyboard;
-
 public class Client {
 	private Socket socket;
 	private ObjectOutputStream out;
@@ -78,11 +76,15 @@ public class Client {
 	}
 
 	private void closeSocket() throws SocketException, ServerException, IOException, ClassNotFoundException {
-		if (!inPrediction)
+		if (!inPrediction && !socket.isOutputShutdown())
 			out.writeObject("5");
-		in.close();
-		out.close();
-		socket.close();
+		else if (socket.isOutputShutdown()) {
+			// do nothing
+		} else {
+			in.close();
+			out.close();
+			socket.close();
+		}
 	}
 
 	public String predictClass(String msg)
