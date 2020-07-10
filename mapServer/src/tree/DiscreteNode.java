@@ -18,8 +18,6 @@ public class DiscreteNode extends SplitNode implements Serializable {
 		for (int i = beginExampleIndex; i < endExampleIndex + 1; i++)
 			distSet.add((String) trainingSet.getExplanatoryValue(i, attribute.getIndex()));
 
-		// super.mapSplit = new SplitInfo[distSet.size()]; now mapSplit is ArrayList, no
-		// need to instantiate it here
 		int begin = beginExampleIndex;
 		int end = begin;
 		boolean flag = true;

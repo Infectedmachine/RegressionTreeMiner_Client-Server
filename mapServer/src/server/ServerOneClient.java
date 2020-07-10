@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.io.FileNotFoundException;
 import data.Data;
 import tree.RegressionTree;
+import tree.UnknownValueException;
 
 public class ServerOneClient extends Thread {
 	private Socket socket;
@@ -79,6 +80,13 @@ public class ServerOneClient extends Thread {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+			} catch (UnknownValueException unknown) {
+				unknown.printStackTrace();
+				try {
+					out.writeObject(unknown.getMessage());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			} catch (FileNotFoundException notfile) {
 				notfile.printStackTrace();
 				try {
@@ -98,7 +106,6 @@ public class ServerOneClient extends Thread {
 					ex.printStackTrace();
 				}
 			}
-
 		}
 	}
 }

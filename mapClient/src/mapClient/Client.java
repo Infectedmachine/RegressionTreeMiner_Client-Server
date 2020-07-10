@@ -106,15 +106,19 @@ public class Client {
 			try {
 				Integer.parseInt(msg);
 			} catch (Exception e) {
-				return "Input Should be numeric!";
+				return "Input Should be numeric!\n";
 			}
 			out.writeObject(Integer.parseInt(msg));
 			msg = in.readObject().toString();
 			if (msg.equals("QUERY")) {
 				msg = in.readObject().toString();
 				return msg;
-			} else {
+			} else if (msg.equals("OK")) {
 				msg = in.readObject().toString();
+				predicted = true;
+				inPrediction = false;
+				return msg;
+			} else {
 				predicted = true;
 				inPrediction = false;
 				return msg;

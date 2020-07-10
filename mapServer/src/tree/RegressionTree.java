@@ -14,8 +14,6 @@ public class RegressionTree implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node root;
 	private RegressionTree childTree[];
-	private Node predictionNode;
-
 	public RegressionTree() {
 
 	}
@@ -53,7 +51,6 @@ public class RegressionTree implements Serializable {
 	}
 
 	private SplitNode determineBestSplitNode(Data trainingSet, int begin, int end) {
-		// Node discArray[] = new Node[trainingSet.getNumberOfExplanatoryAttributes()];
 		TreeSet<Node> nodes = new TreeSet<Node>();
 		Node currentNode;
 
@@ -64,20 +61,10 @@ public class RegressionTree implements Serializable {
 			} else {
 				currentNode = new ContinuousNode(trainingSet, begin, end, (ContinuousAttribute) a);
 			}
-			// Node discrete = new DiscreteNode(trainingSet, begin, end,
-			// (DiscreteAttribute) trainingSet.getExplanatoryAttribute(i));
-			// discArray[i] = discrete;
 			nodes.add(currentNode);
 		}
-
-		/*
-		 * int best = 0; for (int i = 1; i < discArray.length; i++) if
-		 * (discArray[best].getVariance() > discArray[i].getVariance()) best = i;
-		 */
-
 		trainingSet.sort(((SplitNode) nodes.first()).getAttribute(), begin, end);
 		return (SplitNode) nodes.first();
-		// return (SplitNode) discArray[best];
 	}
 
 	public void printTree() {
@@ -147,7 +134,7 @@ public class RegressionTree implements Serializable {
 		}
 	}
 
-	public void predictClass(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+	public void predictClass(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException, UnknownValueException {
 
 		if (root instanceof LeafNode) {
 			out.writeObject("OK");
@@ -159,8 +146,7 @@ public class RegressionTree implements Serializable {
 
 			choice = (Integer) in.readObject();
 			if (choice == -1 || choice >= root.getNumberOfChildren()) {
-				out.writeObject(
-						"The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!");
+				throw new UnknownValueException("The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!\n");
 			} else {
 				childTree[choice].predictClass(in, out);
 			}
@@ -184,6 +170,8 @@ public class RegressionTree implements Serializable {
 		ObjectInputStream inStream = new ObjectInputStream(inFile);
 		tree.root = (Node) inStream.readObject();
 		tree.childTree = (RegressionTree[]) inStream.readObject();
+		inStream.close();
+		inFile.close();
 		return tree;
 
 	}

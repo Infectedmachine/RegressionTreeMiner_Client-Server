@@ -1,10 +1,7 @@
 package data;
 
-import java.io.File;
 import database.*;
 import java.util.*;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 import java.util.Set;
 
 public class Data {
