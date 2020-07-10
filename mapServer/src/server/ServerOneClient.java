@@ -1,10 +1,11 @@
 package server;
 
 import java.io.IOException;
+import data.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
+import java.io.FileNotFoundException;
 import data.Data;
 import tree.RegressionTree;
 
@@ -45,7 +46,7 @@ public class ServerOneClient extends Thread {
 					out.writeObject(tree.toString());
 					break;
 
-				case "4": // SAVE TO DMP FILE 
+				case "4": // SAVE TO DMP FILE
 					tableName = (String) in.readObject();
 					tree.save(tableName + ".dmp");
 					out.writeObject("OK");
@@ -65,15 +66,42 @@ public class ServerOneClient extends Thread {
 					socket.close();
 					check = false;
 					break;
-					
+
 				case "3": // INTERACTIVE PHASE
 					tree.predictClass(in, out);
 					break;
 
 				}
-			} catch (Exception e) {
+			} catch (TrainingDataException e) {
 				e.printStackTrace();
+				try {
+					out.writeObject(e);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			} catch (FileNotFoundException notfile) {
+				notfile.printStackTrace();
+				try {
+					out.writeObject("FILE NOT FOUND!\n");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			} catch (ClassNotFoundException classex) {
+				classex.printStackTrace();
+				try {
+					out.writeObject("Class not found!\n");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}	catch (IOException ioex) {
+				ioex.printStackTrace();
+				try {
+					out.writeObject("I/O Exception\n");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
+
 		}
 	}
 }

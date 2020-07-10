@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -104,12 +105,13 @@ public class ClientGUI extends JFrame {
 
 		private class JPanelCluster extends JPanel {
 			private static final long serialVersionUID = 1L;
-			private JTextField tableText = new JTextField(30);
-			//private JTextField radiusText = new JTextField(10);
+			private JTextField tableText = new JTextField(10);
+			private JTextField choiceText = new JTextField("start");
 			private JTextArea output = new JTextArea();
 			private JButton execute;
+			private JButton sendChoice;
 
-			private JPanelCluster(String button, ActionListener action) {
+			private JPanelCluster(String button, ActionListener action, ActionListener send) {
 				this.setLayout(new GridLayout(3, 1));
 				JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 				output.setEditable(false);
@@ -118,8 +120,22 @@ public class ClientGUI extends JFrame {
 				topPanel.add(new JLabel("Table Name: "));
 				topPanel.add(tableText);
 				execute = new JButton(button);
+				sendChoice = new JButton("Predict");
 				downPanel.add(execute);
+				downPanel.add(sendChoice);
+				downPanel.add(choiceText);
 				execute.addActionListener(action);
+				sendChoice.addActionListener(send);
+				sendChoice.setEnabled(false);
+				choiceText.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent event) {
+						choiceText.setText("");
+					}
+
+					public void focusLost(FocusEvent event) {
+						// nothing
+					}
+				});
 				this.add(topPanel);
 				this.add(centralPanel);
 				this.add(downPanel);
@@ -128,12 +144,24 @@ public class ClientGUI extends JFrame {
 		}
 
 		private TabbedPane() {
-			panelDB = new JPanelCluster("Start Mining", new ActionListener() {
+			panelDB = new JPanelCluster("Learn RT", new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					try {
 						panelDB.output.setText("");
 						learningFromDB();
+						panelDB.sendChoice.setEnabled(true);
+					} catch (ClassNotFoundException | IOException e) {
+						JOptionPane.showMessageDialog(panelDB, "Operation failed");
+					} catch (ServerException e) {
+						JOptionPane.showMessageDialog(panelDB, e.getMessage());
+					}
+				}
+			}, new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					try {
+						panelDB.output.setText("");
+						predictClass(panelDB);
 					} catch (ClassNotFoundException | IOException e) {
 						JOptionPane.showMessageDialog(panelDB, "Operation failed");
 					} catch (ServerException e) {
@@ -147,16 +175,37 @@ public class ClientGUI extends JFrame {
 					try {
 						panelFile.output.setText("");
 						learningFromFile();
+						panelFile.sendChoice.setEnabled(true);
 					} catch (ClassNotFoundException | IOException e1) {
 						JOptionPane.showMessageDialog(panelFile, "Operation failed!");
 					} catch (ServerException e1) {
 						JOptionPane.showMessageDialog(panelFile, e1.getMessage());
 					}
 				}
+			}, new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					try {
+						panelFile.output.setText("");
+						predictClass(panelFile);
+					} catch (ClassNotFoundException | IOException e) {
+						JOptionPane.showMessageDialog(panelDB, "Operation failed");
+					} catch (ServerException e) {
+						JOptionPane.showMessageDialog(panelDB, e.getMessage());
+					}
+				}
 			});
 
 			this.add(panelFile);
 			this.add(panelDB);
+		}
+
+		private void predictClass(JPanelCluster panel) throws SocketException, IOException, ClassNotFoundException, ServerException {
+			String choice;
+			String results;
+			choice = panel.choiceText.getText().trim();
+			results = client.predictClass(choice);
+				
+			panel.output.append("\n" + results);
 		}
 
 		private void learningFromDB() throws SocketException, IOException, ClassNotFoundException, ServerException {

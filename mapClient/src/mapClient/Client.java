@@ -8,10 +8,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import utility.Keyboard;
+
 public class Client {
 	private ObjectOutputStream out;
-	private ObjectInputStream in; 
-
+	private ObjectInputStream in;
+	private boolean predicted = false;
 
 	public boolean connect(String ip, int port) throws IOException {
 		boolean connected;
@@ -29,7 +31,9 @@ public class Client {
 		}
 		return connected;
 	}
-	public String learningFromFile(String tabName) throws SocketException, ServerException, IOException, ClassNotFoundException {
+
+	public String learningFromFile(String tabName)
+			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("2");
 		out.writeObject(tabName);
 		String result = (String) in.readObject();
@@ -40,7 +44,8 @@ public class Client {
 
 	}
 
-	public void storeTableFromDb(String tabName) throws SocketException, ServerException, IOException, ClassNotFoundException {
+	public void storeTableFromDb(String tabName)
+			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("0");
 		out.writeObject(tabName);
 		String result = (String) in.readObject();
@@ -59,7 +64,8 @@ public class Client {
 
 	}
 
-	public void storeTreeInFile(String fileName) throws SocketException, ServerException, IOException, ClassNotFoundException {
+	public void storeTreeInFile(String fileName)
+			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("4");
 		out.writeObject(fileName);
 
@@ -73,7 +79,37 @@ public class Client {
 		out.writeObject("5");
 	}
 
-	public void close() throws SocketException, ServerException, IOException, ClassNotFoundException{
+	public String predictClass(String msg)
+			throws SocketException, ServerException, IOException, ClassNotFoundException {
+		if (predicted && !msg.toUpperCase().equals("Y")) {
+			return "Prediction already computed, would you start a new one? (y/n)\n";
+		} else  if (msg.toUpperCase().equals("Y")){
+			predicted = false;
+			msg = "start";
+		}
+		if (msg.equals("start")) {
+			out.writeObject("3");
+			msg = in.readObject().toString();
+			msg = "Starting prediction phase!\n";
+			msg += in.readObject().toString();
+			return msg;
+		} else {
+			out.writeObject(Integer.parseInt(msg));
+			msg = in.readObject().toString();
+			if (msg.equals("QUERY")) {
+				msg = in.readObject().toString();
+				return msg;
+			} else {
+				msg = in.readObject().toString();
+				predicted = true;
+				return msg;
+			}
+
+		}
+
+	}
+
+	public void close() throws SocketException, ServerException, IOException, ClassNotFoundException {
 		this.closeSocket();
 	}
 }
