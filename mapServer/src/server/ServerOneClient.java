@@ -68,14 +68,7 @@ public class ServerOneClient extends Thread {
 					break;
 
 				case "3": // INTERACTIVE PHASE
-					int error = tree.predictClass(in, out);
-					if (error < 0) {
-						System.out.println(socket + " connection dropped!");
-						out.close();
-						in.close();
-						socket.close();
-						check = false;
-					}
+					tree.predictClass(in, out);
 					break;
 
 				}
@@ -93,17 +86,14 @@ public class ServerOneClient extends Thread {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-			} catch (ClassNotFoundException classex) {
-				classex.printStackTrace();
-				try {
-					out.writeObject("Class not found!\n");
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			} catch (IOException ioex) {
+			} catch (IOException | ClassNotFoundException ioex) {
+				System.out.println(socket + " connection dropped!");
 				ioex.printStackTrace();
+				check = false;
 				try {
-					out.writeObject("I/O Exception\n");
+					out.close();
+					in.close();
+					socket.close();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
