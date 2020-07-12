@@ -3,6 +3,7 @@ package data;
 import database.*;
 import java.util.*;
 import java.util.Set;
+import java.sql.SQLException;
 
 public class Data {
 
@@ -174,9 +175,8 @@ public class Data {
 
 	}
 
-	private void initExplanatorySetFromTable(TableData tableData, TableSchema schema, String table) throws TrainingDataException{
+	private void initExplanatorySetFromTable(TableData tableData, TableSchema schema, String table) throws TrainingDataException, SQLException{
 		explanatorySet = new LinkedList<Attribute>();
-		try {
 			if (schema.getNumberOfAttributes() < 2)
 				throw new TrainingDataException("The DB Table has less than 2 columns!");
 			else if (!schema.getColumn(schema.getNumberOfAttributes() - 1).isNumber())
@@ -198,10 +198,7 @@ public class Data {
 			classAttribute = new ContinuousAttribute(
 					(schema.getColumn(schema.getNumberOfAttributes() - 1)).getColumnName(),
 					schema.getNumberOfAttributes() - 1);
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-			ex.printStackTrace();
-		}
+		
 	}
 
 	private void initDataFromTable(TableData tableData, TableSchema schema, String table) throws TrainingDataException {

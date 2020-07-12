@@ -14,6 +14,7 @@ public class RegressionTree implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node root;
 	private RegressionTree childTree[];
+
 	public RegressionTree() {
 
 	}
@@ -88,53 +89,66 @@ public class RegressionTree implements Serializable {
 
 	public void printRules() {
 		System.out.println("********* RULES **********\n");
-		toRules();
+		System.out.println(getRulesString());
 		System.out.println("*************************\n");
 
 	}
 
-	private void toRules() {
+	public String getRulesString() {
+		String rules = "";
 		if (this.root instanceof DiscreteNode) {
 			for (int i = 0; i < this.childTree.length; i++) {
-				String rules = "";
-				rules += ((DiscreteNode) root).getAttribute() + "=";
+
+				rules += ((DiscreteNode) root).getAttribute() + ((DiscreteNode) root).getSplitInfo(i).getComparator();
 				rules += ((DiscreteNode) root).getSplitInfo(i).getSplitValue();
-				this.childTree[i].toRules(rules);
+				rules = this.childTree[i].getRulesString(rules);
 			}
 		} else if (this.root instanceof ContinuousNode) {
 			for (int i = 0; i < this.childTree.length; i++) {
-				String rules = "";
+
 				rules += ((ContinuousNode) root).getAttribute()
 						+ ((ContinuousNode) root).getSplitInfo(i).getComparator();
 				rules += ((ContinuousNode) root).getSplitInfo(i).getSplitValue();
-				this.childTree[i].toRules(rules);
+				rules = this.childTree[i].getRulesString(rules);
 			}
+		}
+		return rules;
+	}
+
+	private String getRulesString(String rules) {
+		if (this.root instanceof LeafNode) {
+			rules += ((LeafNode) root).toRules() + "\n";
+			return rules;
+		} else {
+			if (!rules.isEmpty())
+				rules += " AND ";
+			String copyRules = rules;
+			for (int i = 0; i < this.childTree.length; i++) {
+
+				if (this.root instanceof ContinuousNode) {
+					rules += ((ContinuousNode) root).getAttribute();
+					rules += ((ContinuousNode) root).getSplitInfo(i).getComparator();
+					rules += ((ContinuousNode) root).getSplitInfo(i).getSplitValue();
+
+					rules = this.childTree[i].getRulesString(rules);
+					if (i + 1 < this.childTree.length)
+						rules += copyRules;
+				} else {
+					rules += ((DiscreteNode) root).getAttribute()
+							+ ((DiscreteNode) root).getSplitInfo(i).getComparator();
+					rules += ((DiscreteNode) root).getSplitInfo(i).getSplitValue();
+
+					rules = this.childTree[i].getRulesString(rules);
+					if (i + 1 < this.childTree.length)
+						rules += copyRules;
+				}
+			}
+			return rules;
 		}
 	}
 
-	private void toRules(String rules) {
-		if (this.root instanceof DiscreteNode) {
-			rules += " AND " + ((DiscreteNode) root).getAttribute() + "=";
-			for (int i = 0; i < this.childTree.length; i++) {
-				String rulesCopy = rules;
-				rulesCopy += ((DiscreteNode) root).getSplitInfo(i).getSplitValue();
-				this.childTree[i].toRules(rulesCopy);
-			}
-		} else if (this.root instanceof ContinuousNode) {
-			rules += " AND " + ((ContinuousNode) root).getAttribute();
-			for (int i = 0; i < this.childTree.length; i++) {
-				String rulesCopy = rules;
-				rulesCopy += ((ContinuousNode) root).getSplitInfo(i).getComparator()
-						+ ((ContinuousNode) root).getSplitInfo(i).getSplitValue();
-				this.childTree[i].toRules(rulesCopy);
-			}
-		} else if (this.root instanceof LeafNode) {
-			rules += ((LeafNode) root).toRules();
-			System.out.println(rules);
-		}
-	}
-
-	public void predictClass(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException, UnknownValueException {
+	public void predictClass(ObjectInputStream in, ObjectOutputStream out)
+			throws IOException, ClassNotFoundException, UnknownValueException {
 
 		if (root instanceof LeafNode) {
 			out.writeObject("OK");
@@ -146,7 +160,8 @@ public class RegressionTree implements Serializable {
 
 			choice = (Integer) in.readObject();
 			if (choice == -1 || choice >= root.getNumberOfChildren()) {
-				throw new UnknownValueException("The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!\n");
+				throw new UnknownValueException(
+						"The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!\n");
 			} else {
 				childTree[choice].predictClass(in, out);
 			}

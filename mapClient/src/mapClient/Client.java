@@ -90,12 +90,11 @@ public class Client {
 	public String predictClass(String msg)
 			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		if (predicted && !msg.toUpperCase().equals("Y")) {
-			return "Prediction already computed, would you start a new one? (y/n)\n";
+			return "\nPrediction already computed, would you start a new one? (y/n)\n";
 		} else if (msg.toUpperCase().equals("Y") && !inPrediction) {
 			predicted = false;
-			msg = "start";
 		}
-		if (msg.equals("start") && !inPrediction) {
+		if (!inPrediction) {
 			inPrediction = true;
 			out.writeObject("3");
 			msg = in.readObject().toString();
@@ -126,6 +125,10 @@ public class Client {
 
 		}
 
+	}
+	
+	public boolean isPredicted() {
+		return this.predicted;
 	}
 
 	public void close() throws SocketException, ServerException, IOException, ClassNotFoundException {

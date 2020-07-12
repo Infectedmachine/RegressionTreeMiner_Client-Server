@@ -30,6 +30,8 @@ public class ServerOneClient extends Thread {
 		boolean check = true;
 		String request;
 		String tableName;
+		String rulesString;
+		String treeString;
 
 		while (check) {
 			try {
@@ -44,7 +46,13 @@ public class ServerOneClient extends Thread {
 				case "1": // COMPUTE
 					tree = new RegressionTree(data);
 					out.writeObject("OK");
-					out.writeObject(tree.toString());
+					rulesString = "********* RULES **********\n";
+					rulesString += tree.getRulesString();
+					rulesString += "*************************\n";
+					treeString = "********* TREE **********\n";
+					treeString += tree.toString();
+					treeString += "*************************\n";
+					out.writeObject(rulesString + treeString);
 					break;
 
 				case "4": // SAVE TO DMP FILE
@@ -57,7 +65,13 @@ public class ServerOneClient extends Thread {
 					tableName = (String) in.readObject();
 					tree = RegressionTree.load(tableName + ".dmp");
 					out.writeObject("OK");
-					out.writeObject(tree.toString());
+					rulesString = "********* RULES **********\n";
+					rulesString += tree.getRulesString();
+					rulesString += "*************************\n";
+					treeString = "********* TREE **********\n";
+					treeString += tree.toString();
+					treeString += "*************************\n";
+					out.writeObject(rulesString + treeString);
 					break;
 
 				case "5": // DISCONNECT
@@ -76,7 +90,7 @@ public class ServerOneClient extends Thread {
 			} catch (TrainingDataException e) {
 				e.printStackTrace();
 				try {
-					out.writeObject(e);
+					out.writeObject(e.getMessage());
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

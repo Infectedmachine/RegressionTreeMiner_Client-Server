@@ -102,25 +102,25 @@ public class ClientGUI extends JFrame {
 
 	private class TabbedPane extends JPanel {
 		private static final long serialVersionUID = 1L;
-		private JPanelCluster panelDB;
-		private JPanelCluster panelFile;
+		private JPanelTabPanel panelDB;
+		private JPanelTabPanel panelFile;
 
-		private class JPanelCluster extends JPanel {
+		private class JPanelTabPanel extends JPanel {
 			private static final long serialVersionUID = 1L;
 			private JTextField tableText = new JTextField(10);
-			private JTextField choiceText = new JTextField("start");
+			private JTextField choiceText = new JTextField(10);
 			private JTextArea output = new JTextArea();
 			private JButton execute;
 			private JButton sendChoice;
 
-			private JPanelCluster(String button, ActionListener action, ActionListener send) {
-				this.setLayout(new GridLayout(3, 1));
-				JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			private JPanelTabPanel(String button, ActionListener action, ActionListener send) {
+				this.setLayout(new GridLayout(2, 1));
 				output.setEditable(false);
-				JScrollPane centralPanel = new JScrollPane(output);
+				choiceText.setEditable(false);
+				JScrollPane topPanel = new JScrollPane(output);
 				JPanel downPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-				topPanel.add(new JLabel("Table Name: "));
-				topPanel.add(tableText);
+				downPanel.add(new JLabel("Table Name: "));
+				downPanel.add(tableText);
 				execute = new JButton(button);
 				sendChoice = new JButton("Predict");
 				downPanel.add(execute);
@@ -139,14 +139,13 @@ public class ClientGUI extends JFrame {
 					}
 				});
 				this.add(topPanel);
-				this.add(centralPanel);
 				this.add(downPanel);
 				this.setVisible(true);
 			}
 		}
 
 		private TabbedPane() {
-			panelDB = new JPanelCluster("Learn RT", new ActionListener() {
+			panelDB = new JPanelTabPanel("Learn RT", new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					try {
@@ -162,7 +161,16 @@ public class ClientGUI extends JFrame {
 			}, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					try {
+						panelDB.choiceText.setEditable(true);
+						panelDB.execute.setEnabled(false);
+						panelFile.execute.setEnabled(false);
+						panelFile.sendChoice.setEnabled(false);
 						predictClass(panelDB);
+						if (client.isPredicted()) {
+							panelDB.execute.setEnabled(true);
+							panelFile.execute.setEnabled(true);
+							panelFile.sendChoice.setEnabled(true);
+						}
 					} catch (ClassNotFoundException | IOException e) {
 						JOptionPane.showMessageDialog(panelDB, "Operation failed");
 					} catch (ServerException e) {
@@ -170,7 +178,7 @@ public class ClientGUI extends JFrame {
 					}
 				}
 			});
-			panelFile = new JPanelCluster("Store from file", new ActionListener() {
+			panelFile = new JPanelTabPanel("Store from file", new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					try {
@@ -186,7 +194,16 @@ public class ClientGUI extends JFrame {
 			}, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					try {
+						panelFile.choiceText.setEditable(true);
+						panelFile.execute.setEnabled(false);
+						panelDB.execute.setEnabled(false);
+						panelDB.sendChoice.setEnabled(false);
 						predictClass(panelFile);
+						if (client.isPredicted()) {
+							panelFile.execute.setEnabled(true);
+							panelDB.execute.setEnabled(true);
+							panelDB.sendChoice.setEnabled(true);
+						}
 					} catch (ClassNotFoundException | IOException e) {
 						JOptionPane.showMessageDialog(panelDB, "Operation failed");
 					} catch (ServerException e) {
@@ -199,7 +216,7 @@ public class ClientGUI extends JFrame {
 			this.add(panelDB);
 		}
 
-		private void predictClass(JPanelCluster panel)
+		private void predictClass(JPanelTabPanel panel)
 				throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String choice;
 			String results;
@@ -212,14 +229,18 @@ public class ClientGUI extends JFrame {
 		private void learningFromDB() throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String tableName;
 			String results;
-			tableName = panelDB.tableText.getText().trim();
-			client.storeTableFromDb(tableName);
-			results = client.learningFromDbTable();
+			try {
+				tableName = panelDB.tableText.getText().trim();
+				client.storeTableFromDb(tableName);
+				results = client.learningFromDbTable();
 
-			panelDB.output.append("Tree:\n" + results);
+				panelDB.output.append(results);
 
-			// Save results to FILE
-			client.storeTreeInFile(tableName);
+				// Save results to FILE
+				client.storeTreeInFile(tableName);
+			} catch (Exception e) {
+				throw new ServerException(e.getMessage());
+			}
 			JOptionPane.showMessageDialog(this, "Operation completed successfully!");
 		}
 
