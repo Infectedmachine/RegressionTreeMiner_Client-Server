@@ -4,13 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 
+/**
+ * Modella la tupla del training set.
+ * @author Nazar Chekalin
+ *
+ */
 public class Example implements Comparable<Example>, Iterable<Object> {
 	private List<Object> example = new ArrayList<Object>();
 
+	/**
+	 * Aggiunge un oggetto alla tupla
+	 * @param o - Object
+	 */
 	public void add(Object o) {
 		example.add(o);
 	}
 
+	/**
+	 * Restituisce un oggetto contenuto nella tupla, all'indice specificato
+	 * @param i - indice
+	 * @return Object - oggetto
+	 */
 	public Object get(int i) {
 		return example.get(i);
 	}

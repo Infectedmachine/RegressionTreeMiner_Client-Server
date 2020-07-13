@@ -5,6 +5,11 @@ import java.util.*;
 import java.util.Set;
 import java.sql.SQLException;
 
+/**
+ * Modella l'insieme degli esempi del training set
+ * @author Nazar Chekalin
+ *
+ */
 public class Data {
 
 	private Object data[][];
@@ -13,6 +18,13 @@ public class Data {
 	private ContinuousAttribute classAttribute;
 	private List<Example> dataList = new ArrayList<Example>();
 
+	/**
+	 * Costruttore di classe
+	 * Effettua una connessione al database e ricava gli esempi dalla tabella indicata.
+	 * Inizializza la matrice dei dati, lista degli attributi della tabella e l'attributo di classe.
+	 * @param table - nome della tabella degli esempi
+	 * @throws TrainingDataException
+	 */
 	public Data(String table) throws TrainingDataException {
 		DbAccess db = new DbAccess();
 		try {
@@ -29,26 +41,53 @@ public class Data {
 		}
 	}
 
+	/**
+	 * Restituisce il numero degli esempi del training set
+	 * @return Int - valore di tipo intero indice del numero degli esempi
+	 */
 	public int getNumberOfExamples() {
 		return this.numberOfExamples;
 	}
 
+	/**
+	 * Restituisce il numero degli Attributi della tabella, l'attributo di classe è escluso. 
+	 * @return Int - valore di tipo intero indice del numero degli attributi. 
+	 */
 	public int getNumberOfExplanatoryAttributes() {
 		return this.explanatorySet.size();
 	}
 
+	/**
+	 * Restituisce il valore di classe all'interno della tabella relativo al rigo indicato.
+	 * @param exampleIndex - indice del rigo
+	 * @return Double - valore di tipo numerico indice del valore di classe. 
+	 */
 	public Double getClassValue(int exampleIndex) {
 		return (Double) this.data[exampleIndex][this.getNumberOfExplanatoryAttributes()];
 	}
 
+	/**
+	 * Restituisce il valore della tabella in corrispondenza della coppia: riga -  colonna.
+	 * @param exampleIndex - indice di riga
+	 * @param attributeIndex - indice di colonna
+	 * @return Object - valore della tabella in corrispondenza riga - colonna.
+	 */
 	public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
 		return this.data[exampleIndex][attributeIndex];
 	}
 
+	/**
+	 * Restituisce l'attributo corrispondente all'indice di colonna nella tabella.
+	 * @param index - Indice della colonna
+	 * @return Attribute - attributo corrispondente all'indice di colonna. 
+	 */
 	public Attribute getExplanatoryAttribute(int index) {
 		return (Attribute) this.explanatorySet.get(index);
 	}
 
+	/**
+	 * Crea e restituisce una stringa contenente tutti i valori della tabella
+	 */
 	public String toString() {
 		String value = "";
 		for (int i = 0; i < numberOfExamples; i++) {
@@ -61,12 +100,23 @@ public class Data {
 
 	}
 
+	/**
+	 * Ordina il sottoinsieme degli esempi compresi nell'intervallo denotato da beginExampleIndex - endExampleIndex, rispetto
+	 * ad uno specifico attributo. Usa l'algoritmo quicksort con relazione d'ordine <= .
+	 * @param attribute
+	 * @param beginExampleIndex
+	 * @param endExampleIndex
+	 */
 	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
 
 		quicksort(attribute, beginExampleIndex, endExampleIndex);
 	}
 
-	// scambio esempio i con esempi oj
+	/**
+	 * Effettua uno scambio tra i due indici
+	 * @param i - indice 
+	 * @param j - indice 
+	 */
 	private void swap(int i, int j) {
 		Object temp;
 		for (int k = 0; k < getNumberOfExplanatoryAttributes() + 1; k++) {
@@ -77,7 +127,7 @@ public class Data {
 
 	}
 
-	/*
+	/**
 	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
 	 * separazione
 	 */
@@ -112,7 +162,7 @@ public class Data {
 
 	}
 
-	/*
+	/**
 	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
 	 * separazione
 	 */
@@ -147,7 +197,7 @@ public class Data {
 
 	}
 
-	/*
+	/**
 	 * Algoritmo quicksort per l'ordinamento di un array di interi A usando come
 	 * relazione d'ordine totale "<="
 	 * 
@@ -175,6 +225,15 @@ public class Data {
 
 	}
 
+	/**
+	 * Inizializza l'explanatorySet a partire dalla tabella del database.
+	 * Lancia un TrainingDataException in caso in cui la tabella ha meno di due colonne o l'attributo di classe non è numerico. 
+	 * @param tableData - oggetto di tipo TableData
+	 * @param schema - oggetto di tipo TableSchema
+	 * @param table - stringa contenente nome della tabella
+	 * @throws TrainingDataException
+	 * @throws SQLException
+	 */
 	private void initExplanatorySetFromTable(TableData tableData, TableSchema schema, String table) throws TrainingDataException, SQLException{
 		explanatorySet = new LinkedList<Attribute>();
 			if (schema.getNumberOfAttributes() < 2)
@@ -201,6 +260,13 @@ public class Data {
 		
 	}
 
+	/**
+	 * Inizializza i dati degli esempi. 
+	 * @param tableData - oggetto di tipo TableData
+	 * @param schema - oggetto di tipo TableSchema
+	 * @param table - nome della tabella
+	 * @throws TrainingDataException
+	 */
 	private void initDataFromTable(TableData tableData, TableSchema schema, String table) throws TrainingDataException {
 		try {
 			List<Example> tuples = tableData.getTransazioni(table);

@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Modella la classe per l'accesso al database
+ * @author Nazar Chekalin
+ *
+ */
 public class DbAccess {
 
 	private String DRIVER_CLASS_NAME = "org.gjt.mm.mysql.Driver";
@@ -16,10 +21,17 @@ public class DbAccess {
 	private final String TIMEZONE = "?serverTimezone=UTC";
 	private Connection connection;
 
+	/**
+	 * Costruttore di classe
+	 */
 	public DbAccess() {
 
 	}
 
+	/**
+	 * Inizializza la connessione al database
+	 * @throws DatabaseConnectionException
+	 */
 	public void initConnection() throws DatabaseConnectionException {
 		System.out.println("CONNECTING TO DATABSE...");
 		try {
@@ -37,10 +49,17 @@ public class DbAccess {
 		}
 	}
 
+	/**
+	 * Ritorna la sessione della connessione al database.
+	 * @return Connection - oggetto di tipo Connection, java.sql.Connection
+	 */
 	public Connection getConnection() {
 		return this.connection;
 	}
 
+	/**
+	 * Chiude la connessione al database.
+	 */
 	public void closeConnection() {
 		try {
 			connection.close();

@@ -24,10 +24,21 @@ import javax.swing.JTextField;
 import mapClient.Client;
 import mapClient.ServerException;
 
+/**
+ * Interfaccia grafica client-side per l'interfacciamento con il server
+ * 
+ * @author Nazar Chekalin
+ *
+ */
 public class ClientGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Client client;
 
+	/**
+	 * Avvia una schermata di collegamento con il server attraverso l'inserimento
+	 * dell'indirizzo ip. In caso di ip errato segnala, tramite una finestra di
+	 * dialogo, l'errore e ripristina la schermata.
+	 */
 	public void ClientGUIRun() {
 		JFrame connect = new JFrame("Server Connection");
 		connect.setLayout(new GridLayout(3, 1));
@@ -68,6 +79,16 @@ public class ClientGUI extends JFrame {
 
 	}
 
+	/**
+	 * Avvia un'interfaccia grafica che comunica con il server e visualizza
+	 * informazioni della computazione.
+	 * 
+	 * @param ip   - indirizzo del server
+	 * @param port - porta del server
+	 * @return boolean - ritorna un valore booleano che indica se è avvenuta
+	 *         correttamente la connessione con il server
+	 * @throws IOException
+	 */
 	private boolean ServerGUI(String ip, int port) throws IOException {
 		boolean connected;
 		Container app = getContentPane();
@@ -100,11 +121,23 @@ public class ClientGUI extends JFrame {
 		return connected;
 	}
 
+	/**
+	 * Gestisce una finestra grafica con due pannelli tab
+	 * 
+	 * @author Nazar Chekalin
+	 *
+	 */
 	private class TabbedPane extends JPanel {
 		private static final long serialVersionUID = 1L;
 		private JPanelTabPanel panelDB;
 		private JPanelTabPanel panelFile;
 
+		/**
+		 * Gestisce la finestra di tab
+		 * 
+		 * @author Nazar Chekalin
+		 *
+		 */
 		private class JPanelTabPanel extends JPanel {
 			private static final long serialVersionUID = 1L;
 			private JTextField tableText = new JTextField(10);
@@ -113,6 +146,14 @@ public class ClientGUI extends JFrame {
 			private JButton execute;
 			private JButton sendChoice;
 
+			/**
+			 * Crea un template per la finestra tab, con un layout di tipo Grid 2x1
+			 * 
+			 * @param button - Stringa che indica il testo sul tasto execute per il calcolo
+			 *               dell'albero decisionale
+			 * @param action - interfaccia listener per la ricezione di un evento
+			 * @param send   - interfaccia listener per la ricezione di un evento
+			 */
 			private JPanelTabPanel(String button, ActionListener action, ActionListener send) {
 				this.setLayout(new GridLayout(2, 1));
 				output.setEditable(false);
@@ -144,6 +185,9 @@ public class ClientGUI extends JFrame {
 			}
 		}
 
+		/**
+		 * Costruttore di classe per l'istanzia del template per la finestra tab
+		 */
 		private TabbedPane() {
 			panelDB = new JPanelTabPanel("Learn RT", new ActionListener() {
 				@Override
@@ -216,6 +260,19 @@ public class ClientGUI extends JFrame {
 			this.add(panelDB);
 		}
 
+		/**
+		 * Invia il contenuto del textfield, relativo alla scelta decisionale
+		 * dell'albero, al metodo predictClass dell'oggetto client ed appende all'area
+		 * di testo relativa all'output nel pannello tab le informazioni ricevute
+		 * dall'oggetto client.
+		 * 
+		 * @param panel - finestra tab, all'interno della quale verranno stampate le
+		 *              informazioni relative all'albero decisionale
+		 * @throws SocketException
+		 * @throws IOException
+		 * @throws ClassNotFoundException
+		 * @throws ServerException
+		 */
 		private void predictClass(JPanelTabPanel panel)
 				throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String choice;
@@ -226,6 +283,18 @@ public class ClientGUI extends JFrame {
 			panel.output.append(results);
 		}
 
+		/**
+		 * Invia il nome della tabella, contenuto nell'area di testo relativa,
+		 * all'oggetto client che restituisce l'albero decisionale sotto forma di
+		 * stringa. Il contenuto della stringa verrà stampato nell'area di testa
+		 * relativo all'output. e visualizza un messaggio di operazione completata in
+		 * caso di successo.
+		 * 
+		 * @throws SocketException
+		 * @throws IOException
+		 * @throws ClassNotFoundException
+		 * @throws ServerException
+		 */
 		private void learningFromDB() throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String tableName;
 			String results;
@@ -244,6 +313,18 @@ public class ClientGUI extends JFrame {
 			JOptionPane.showMessageDialog(this, "Operation completed successfully!");
 		}
 
+		/**
+		 * Invia il nome del file, contenuto nell'area di testo relativa, all'oggetto
+		 * client che restituisce l'albero decisionale, appreso dal file, sotto forma di
+		 * stringa. Il contenuto è stampato nell'area di testo relativo all'output nel
+		 * pannello tab relativo. Compare un messaggio di operazione completata in caso
+		 * di successo.
+		 * 
+		 * @throws SocketException
+		 * @throws IOException
+		 * @throws ClassNotFoundException
+		 * @throws ServerException
+		 */
 		private void learningFromFile() throws SocketException, IOException, ClassNotFoundException, ServerException {
 			String tableName;
 			String results;

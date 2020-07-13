@@ -8,6 +8,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+/**
+ * Gestisce l'interfacciamento diretto con il server attraverso chiamate a relativi metodi. 
+ * 
+ * @author Nazar Chekalin
+ *
+ */
 public class Client {
 	private Socket socket;
 	private ObjectOutputStream out;
@@ -15,6 +21,13 @@ public class Client {
 	private boolean predicted = false;
 	private boolean inPrediction = false;
 
+	/**
+	 * Effettua la connessione con il server
+	 * @param ip - indirizzo ip del server
+	 * @param port - indirizzo di porta del server
+	 * @return boolean - valore booleano che indica il successo della connessione
+	 * @throws IOException
+	 */
 	public boolean connect(String ip, int port) throws IOException {
 		boolean connected;
 
@@ -32,6 +45,15 @@ public class Client {
 		return connected;
 	}
 
+	/**
+	 * Invia al server il commando relativo al recupero dell'albero decisionale da un file .dmp
+	 * @param tabName - nome del file
+	 * @return String - Stringa contenente l'albero decisionale in forma di testo
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public String learningFromFile(String tabName)
 			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("2");
@@ -44,6 +66,14 @@ public class Client {
 
 	}
 
+	/**
+	 * Invia al server il commando relativo all'apprendimento degli esempi da un database
+	 * @param tabName - nome della tabella all'interno del database
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public void storeTableFromDb(String tabName)
 			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("0");
@@ -54,6 +84,14 @@ public class Client {
 
 	}
 
+	/**
+	 * Invia al server il commando relativo all'apprendimento dell'albero decisionale
+	 * @return String - Stringa contenente l'albero decisionale in forma di testo
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public String learningFromDbTable() throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("1");
 		String result = (String) in.readObject();
@@ -64,6 +102,14 @@ public class Client {
 
 	}
 
+	/**
+	 * Invia al server il commando relativo al salvataggio dell'albero decisionale all'interno di un file .dmp
+	 * @param fileName - nome del file in cui salvare l'intero albero decisionale
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public void storeTreeInFile(String fileName)
 			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		out.writeObject("4");
@@ -75,6 +121,13 @@ public class Client {
 
 	}
 
+	/**
+	 * Invia al server il commando per terminare la sessione
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	private void closeSocket() throws SocketException, ServerException, IOException, ClassNotFoundException {
 		if (!inPrediction && !socket.isOutputShutdown())
 			out.writeObject("5");
@@ -87,6 +140,15 @@ public class Client {
 		}
 	}
 
+	/**
+	 * Apre una sessione interattiva con l'utente per il traversamento dell'albero decisionale
+	 * @param msg - Stringa contenente la decisione per il traversamento (indica il successivo nodo o foglia su cui spostarsi)
+	 * @return Stringa - Stringa contenente la risposta del server alla decisione presa
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public String predictClass(String msg)
 			throws SocketException, ServerException, IOException, ClassNotFoundException {
 		if (predicted && !msg.toUpperCase().equals("Y")) {
@@ -127,10 +189,21 @@ public class Client {
 
 	}
 	
+	/**
+	 * Controlla se vi è una sessione di predizione dell'albero decisionale attualmente aperta
+	 * @return boolean - valore booleano che indica se vi è una sessione decisionale avviata. 
+	 */
 	public boolean isPredicted() {
 		return this.predicted;
 	}
 
+	/**
+	 * Effettua la chiusura della sessione
+	 * @throws SocketException
+	 * @throws ServerException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public void close() throws SocketException, ServerException, IOException, ClassNotFoundException {
 		this.closeSocket();
 	}

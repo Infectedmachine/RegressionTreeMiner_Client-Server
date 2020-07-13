@@ -4,9 +4,21 @@ import java.util.*;
 import data.*;
 import java.io.Serializable;
 
+/**
+ * Modella la classe Attributo Discreto, estende la classe SplitNode
+ * @author Nazar Chekalin
+ *
+ */
 public class DiscreteNode extends SplitNode implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Costruttore di classe, invoca il costruttore della super-classe SplitNode.
+	 * @param trainingSet - oggetto di tipo Data
+	 * @param beginExampleIndex - indice di rigo inizio
+	 * @param endExampleIndex - indice di rigo fine
+	 * @param attribute - attributo della tabella del training set
+	 */
 	public DiscreteNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, DiscreteAttribute attribute) {
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}

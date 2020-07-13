@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.FileNotFoundException;
 
+/**
+ * Modella la classe Albero di regressione
+ * @author Nazar Chekalin
+ *
+ */
 public class RegressionTree implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node root;
@@ -19,11 +24,22 @@ public class RegressionTree implements Serializable {
 
 	}
 
+	/**
+	 * Costruttore di classe, richiama il metodo per la costruzione dell'albero. 
+	 * @param trainingSet - oggetto di tipo Data contenente il training set
+	 */
 	public RegressionTree(Data trainingSet) {
 
 		learnTree(trainingSet, 0, trainingSet.getNumberOfExamples() - 1, trainingSet.getNumberOfExamples() * 10 / 100);
 	}
 
+	/**
+	 * Costruice l'albero decisionale
+	 * @param trainingSet - oggetto Data contenente il training set
+	 * @param begin - indice inizio riga training set
+	 * @param end - indice fine riga training set
+	 * @param numberOfExamplesPerLeaf - numero di esempi massimo per ogni foglia
+	 */
 	private void learnTree(Data trainingSet, int begin, int end, int numberOfExamplesPerLeaf) {
 		if (isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)) {
 			root = new LeafNode(trainingSet, begin, end);
@@ -44,6 +60,14 @@ public class RegressionTree implements Serializable {
 		}
 	}
 
+	/**
+	 * Determina se il sottoinsieme indicato è rappresentabile come foglia
+	 * @param trainingSet - oggetto di tipo Data contenente il training set
+	 * @param begin - indice inizio riga del training set
+	 * @param end - indice fine riga del training set
+	 * @param numberOfExamplesPerLeaf - numero di esempi massimo per ogni foglia
+	 * @return boolean - Vero se il sottoinsieme rappresenta una foglia, Falso altrimenti.
+	 */
 	private boolean isLeaf(Data trainingSet, int begin, int end, int numberOfExamplesPerLeaf) {
 		if ((end - begin + 1) <= numberOfExamplesPerLeaf)
 			return true;
@@ -51,6 +75,13 @@ public class RegressionTree implements Serializable {
 			return false;
 	}
 
+	/**
+	 * Determina il miglior sottoinsieme per un nodo di tipo Split
+	 * @param trainingSet - oggetto di tipo Data contenente il training set
+	 * @param begin - indice inizio sottoinsieme
+	 * @param end - indice fine sottoinsieme
+	 * @return SplitNode - oggetto di tipo SplitNode che rappresenta il miglior candidato al sottoinsieme. 
+	 */
 	private SplitNode determineBestSplitNode(Data trainingSet, int begin, int end) {
 		TreeSet<Node> nodes = new TreeSet<Node>();
 		Node currentNode;
@@ -68,6 +99,9 @@ public class RegressionTree implements Serializable {
 		return (SplitNode) nodes.first();
 	}
 
+	/**
+	 * Stampa l'albero
+	 */
 	public void printTree() {
 		System.out.println("********* TREE **********\n");
 		System.out.println(toString());
@@ -87,6 +121,9 @@ public class RegressionTree implements Serializable {
 		return tree;
 	}
 
+	/**
+	 * Stampa le regola dell'albero decisionale
+	 */
 	public void printRules() {
 		System.out.println("********* RULES **********\n");
 		System.out.println(getRulesString());
@@ -94,6 +131,10 @@ public class RegressionTree implements Serializable {
 
 	}
 
+	/**
+	 * Costruisce e restituisce una stringa contenente le regole per l'albero decisionale
+	 * @return String - stringa completa di informazioni relative alle regole.
+	 */
 	public String getRulesString() {
 		String rules = "";
 		if (this.root instanceof DiscreteNode) {
@@ -115,6 +156,11 @@ public class RegressionTree implements Serializable {
 		return rules;
 	}
 
+	/**
+	 * Metodo a sostengo di getRulesString() per la costruzione della stringa
+	 * @param rules - Stringa contenente informazioni sulle regole incompleta
+	 * @return String - Stringa incompleta con informazioni aggiuntive concatenate. 
+	 */
 	private String getRulesString(String rules) {
 		if (this.root instanceof LeafNode) {
 			rules += ((LeafNode) root).toRules() + "\n";
@@ -147,6 +193,14 @@ public class RegressionTree implements Serializable {
 		}
 	}
 
+	/**
+	 * Metodo iterattivo per l'esplorazione dell'albero decisionale
+	 * @param in - ObjectInputStream
+	 * @param out - ObjectOutputStream
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws UnknownValueException
+	 */
 	public void predictClass(ObjectInputStream in, ObjectOutputStream out)
 			throws IOException, ClassNotFoundException, UnknownValueException {
 
@@ -169,6 +223,12 @@ public class RegressionTree implements Serializable {
 		}
 	}
 
+	/**
+	 * Effettua la creazione di un file .dmp contenente l'intero albero decisionale.
+	 * @param fileName - nome del file in cui verrà salvato l'albero
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void save(String fileName) throws FileNotFoundException, IOException {
 		FileOutputStream outFile = new FileOutputStream(fileName);
 		ObjectOutputStream outStream = new ObjectOutputStream(outFile);
@@ -178,6 +238,14 @@ public class RegressionTree implements Serializable {
 		outFile.close();
 	}
 
+	/**
+	 * Ricostruice l'albero decisionale, precedentemente serializzato, contenuto in un file con estensione dmp
+	 * @param fileName - nome del file
+	 * @return RegressionTree - istanza dell'oggetto albero contenente le informazioni dell'albero decisionale
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static RegressionTree load(String fileName)
 			throws FileNotFoundException, IOException, ClassNotFoundException {
 		RegressionTree tree = new RegressionTree();

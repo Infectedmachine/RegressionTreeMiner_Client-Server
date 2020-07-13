@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Modella la classe per la gestione del server multi-client.
+ * @author Nazar Chekalin
+ *
+ */
 public class MultiServer {
 	private int PORT = 8080;
 
@@ -11,11 +16,18 @@ public class MultiServer {
 		new MultiServer(8080);
 	}
 
+	/**
+	 * Costruttore di classe, avvia la sessione del server sulla porta data.
+	 * @param port - porta su cui avviare il server.
+	 */
 	public MultiServer(int port) {
 		PORT = port;
 		run();
 	}
 
+	/**
+	 * Avvia il server
+	 */
 	private void run() {
 		try {
 			ServerSocket s = new ServerSocket(PORT);

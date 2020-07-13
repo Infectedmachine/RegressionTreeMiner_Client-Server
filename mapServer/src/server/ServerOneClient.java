@@ -10,6 +10,11 @@ import data.Data;
 import tree.RegressionTree;
 import tree.UnknownValueException;
 
+/**
+ * Modella la classe per la gestione del server a singolo client. Estende la classe Thread
+ * @author Nazar Chekalin
+ *
+ */
 public class ServerOneClient extends Thread {
 	private Socket socket;
 	private ObjectInputStream in;
@@ -17,6 +22,11 @@ public class ServerOneClient extends Thread {
 	private Data data;
 	private RegressionTree tree;
 
+	/**
+	 * Costruttore di classe, inizializza il client socket e I/O Stream.
+	 * @param s - client socket
+	 * @throws IOException
+	 */
 	public ServerOneClient(Socket s) throws IOException {
 		socket = s;
 		in = new ObjectInputStream(socket.getInputStream());

@@ -9,9 +9,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 
+/**
+ * Modella lo schema della tabella come un insieme di Colomn
+ * @author Nazar Chekalin
+ *
+ */
 public class TableSchema implements Iterable<Column> {
 	List<Column> tableSchema = new ArrayList<Column>();
 
+	/**
+	 * Costruttore di classe, crea una lista di Column (classe che modella la coppia nome_colonna - tipo_colonna)
+	 * @param db - oggetto DbAccess 
+	 * @param tableName - nome tabella del database
+	 * @throws SQLException
+	 */
 	public TableSchema(DbAccess db, String tableName) throws SQLException {
 
 		HashMap<String, String> mapSQL_JAVATypes = new HashMap<String, String>();
@@ -47,14 +58,26 @@ public class TableSchema implements Iterable<Column> {
 
 	}
 
+	/**
+	 * Restituisce il numero di colonne
+	 * @return Int - valore intero
+	 */
 	public int getNumberOfAttributes() {
 		return tableSchema.size();
 	}
 
+	/**
+	 * Restituisce la colonna all'indice indicato
+	 * @param index - indice colonna
+	 * @return Column - oggetto Column
+	 */
 	public Column getColumn(int index) {
 		return tableSchema.get(index);
 	}
 
+	/**
+	 * Iteratore di classe
+	 */
 	public Iterator<Column> iterator() {
 		return tableSchema.iterator();
 	}

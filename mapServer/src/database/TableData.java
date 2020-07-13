@@ -8,14 +8,30 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Modella l'insieme delle tuple del training set
+ * @author Nazar Chekalin
+ *
+ */
 public class TableData {
 
 	DbAccess db;
 
+	/**
+	 * Costruttore di classe
+	 * @param db - Oggetto istanza DbAccess
+	 */
 	public TableData(DbAccess db) {
 		this.db = db;
 	}
 
+	/**
+	 * Restituisce una lista di tuple del training Set
+	 * @param table - nome della tabella
+	 * @return List - lista delle tuple
+	 * @throws SQLException
+	 * @throws EmptySetException
+	 */
 	public List<Example> getTransazioni(String table) throws SQLException, EmptySetException {
 		LinkedList<Example> transSet = new LinkedList<Example>();
 		Statement statement;
@@ -55,6 +71,13 @@ public class TableData {
 
 	}
 
+	/**
+	 * Restituisce un Set contenente i distinti valori di una colonna
+	 * @param table - nome tabella del database
+	 * @param column - Oggetto di tipo Column
+	 * @return Set - set di valori distinti della colonna
+	 * @throws SQLException
+	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 		Set<Object> valueSet = new TreeSet<Object>();
 		Statement statement;

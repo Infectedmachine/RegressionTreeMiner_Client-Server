@@ -8,13 +8,28 @@ import data.ContinuousAttribute;
 import data.Data;
 import java.io.Serializable;
 
+/**
+ * Modella la classe Attributo continuo, estende la classe SplitNode.
+ * @author Nazar Chekalin
+ *
+ */
 public class ContinuousNode extends SplitNode implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Costruttore di classe, invoca il costruttore della super-classe SplitNode. 
+	 * @param trainingSet - oggetto di tipo Data
+	 * @param beginExampleIndex - indice inizio riga
+	 * @param endExampleIndex - indice fine riga
+	 * @param attribute - attributo della tabella del training set
+	 */
 	public ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}
 
+	/**
+	 * Realizza il metodo astratto della superclasse. 
+	 */
 	protected void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 		// Update mapSplit defined in SplitNode -- contiene gli indici del
 		// partizionamento
@@ -58,6 +73,9 @@ public class ContinuousNode extends SplitNode implements Serializable {
 
 	}
 
+	/**
+	 * Verifica se il valore è presente in uno dei figli dello splitNode.
+	 */
 	protected int testCondition(Object value) {
 		for (int i = 0; i < super.mapSplit.size(); i++)
 			if (super.mapSplit.get(i).getSplitValue() == value)
