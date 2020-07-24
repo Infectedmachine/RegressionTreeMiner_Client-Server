@@ -69,7 +69,7 @@ public class RegressionTree implements Serializable {
 	 * @return boolean - Vero se il sottoinsieme rappresenta una foglia, Falso altrimenti.
 	 */
 	private boolean isLeaf(Data trainingSet, int begin, int end, int numberOfExamplesPerLeaf) {
-		if ((end - begin + 1) <= numberOfExamplesPerLeaf)
+		if ((end - begin + 1) <= numberOfExamplesPerLeaf || (end - begin + 1) == 1)
 			return true;
 		else
 			return false;

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="C:\Program Files (x86)\MySQL\Connector J 8.0\mysql-connector-java-8.0.20.jar" destdir="../mapClient/doc" doctitle="mapServer" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="tree,server,data,database" source="1.8" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
